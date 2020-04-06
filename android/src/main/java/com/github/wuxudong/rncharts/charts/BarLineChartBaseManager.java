@@ -56,15 +56,28 @@ public abstract class BarLineChartBaseManager<T extends BarLineChartBase, U exte
     public void setYAxis(Chart chart, ReadableMap propMap) {
         BarLineChartBase barLineChart = (BarLineChartBase) chart;
 
+
         if (BridgeUtils.validate(propMap, ReadableType.Map, "left")) {
             YAxis leftYAxis = barLineChart.getAxisLeft();
             setCommonAxisConfig(chart, leftYAxis, propMap.getMap("left"));
             setYAxisConfig(leftYAxis, propMap.getMap("left"));
+
+            if (BridgeUtils.validate(propMap.getMap("left"), ReadableType.Boolean, "logarithmic") && propMap.getMap("left").getBoolean("logarithmic")) {
+                barLineChart.setRendererLeftYAxis(new YAxisLogarithmicRenderer(
+                        barLineChart.getViewPortHandler(), leftYAxis,
+                        barLineChart.getTransformer(leftYAxis.getAxisDependency())));
+            }
         }
         if (BridgeUtils.validate(propMap, ReadableType.Map, "right")) {
             YAxis rightYAxis = barLineChart.getAxisRight();
             setCommonAxisConfig(chart, rightYAxis, propMap.getMap("right"));
             setYAxisConfig(rightYAxis, propMap.getMap("right"));
+
+            if (BridgeUtils.validate(propMap.getMap("right"), ReadableType.Boolean, "logarithmic") && propMap.getMap("right").getBoolean("logarithmic")) {
+                barLineChart.setRendererRightYAxis(new YAxisLogarithmicRenderer(
+                        barLineChart.getViewPortHandler(), rightYAxis,
+                        barLineChart.getTransformer(rightYAxis.getAxisDependency())));
+            }
         }
     }
 
@@ -111,6 +124,7 @@ public abstract class BarLineChartBaseManager<T extends BarLineChartBase, U exte
     }
 
     private void updateVisibleRange(BarLineChartBase chart, ReadableMap propMap) {
+
         if (BridgeUtils.validate(propMap, ReadableType.Map, "x")) {
             ReadableMap x = propMap.getMap("x");
             if (BridgeUtils.validate(x, ReadableType.Number, "min")) {
